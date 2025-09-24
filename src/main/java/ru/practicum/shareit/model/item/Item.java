@@ -1,8 +1,8 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.model.item;
 
 import lombok.Data;
+import ru.practicum.shareit.model.user.User;
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.User;
 
 @Data
 public class Item {

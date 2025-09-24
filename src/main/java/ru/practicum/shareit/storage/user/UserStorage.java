@@ -1,6 +1,6 @@
-package ru.practicum.shareit.user.storage;
+package ru.practicum.shareit.storage.user;
 
-import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.model.user.User;
 import java.util.List;
 
 public interface UserStorage {

@@ -1,11 +1,12 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.controller.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.model.user.User;
+import ru.practicum.shareit.dto.user.UserDto;
+import ru.practicum.shareit.mapper.user.UserMapper;
+import ru.practicum.shareit.service.user.UserService;
 
 import jakarta.validation.Valid;
 import java.util.List;
@@ -15,10 +16,10 @@ import java.util.stream.Collectors;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController {
+public class UserController implements UserControllerApi {
     private final UserService userService;
 
-    @GetMapping
+    @Override
     public List<UserDto> findAll() {
         log.info("Получен запрос GET /users");
         return userService.findAll().stream()
@@ -26,7 +27,7 @@ public class UserController {
                 .collect(Collectors.toList());
     }
 
-    @PostMapping
+    @Override
     public UserDto create(@Valid @RequestBody UserDto userDto) {
         log.info("Получен запрос POST /users с телом: {}", userDto);
         User user = UserMapper.toUser(userDto);
@@ -34,7 +35,7 @@ public class UserController {
         return UserMapper.toUserDto(createdUser);
     }
 
-    @PatchMapping("/{userId}")
+    @Override
     public UserDto update(@PathVariable long userId, @RequestBody UserDto userDto) {
         log.info("Получен запрос PATCH /users/{} с телом: {}", userId, userDto);
         User user = UserMapper.toUser(userDto);
@@ -42,13 +43,13 @@ public class UserController {
         return UserMapper.toUserDto(updatedUser);
     }
 
-    @GetMapping("/{userId}")
+    @Override
     public UserDto getUserById(@PathVariable long userId) {
         log.info("Получен запрос GET /users/{}", userId);
         return UserMapper.toUserDto(userService.getUserById(userId));
     }
 
-    @DeleteMapping("/{userId}")
+    @Override
     public void delete(@PathVariable long userId) {
         log.info("Получен запрос DELETE /users/{}", userId);
         userService.delete(userId);

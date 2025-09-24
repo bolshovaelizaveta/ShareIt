@@ -1,6 +1,6 @@
-package ru.practicum.shareit.item.storage;
+package ru.practicum.shareit.storage.item;
 
-import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.model.item.Item;
 
 import java.util.List;
 
