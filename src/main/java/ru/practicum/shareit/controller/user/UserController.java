@@ -36,7 +36,7 @@ public class UserController implements UserControllerApi {
     }
 
     @Override
-    public UserDto update(@PathVariable long userId, @RequestBody UserDto userDto) {
+    public UserDto update(@PathVariable Long userId, @RequestBody UserDto userDto) {
         log.info("Получен запрос PATCH /users/{} с телом: {}", userId, userDto);
         User user = UserMapper.toUser(userDto);
         User updatedUser = userService.update(userId, user);
@@ -44,13 +44,13 @@ public class UserController implements UserControllerApi {
     }
 
     @Override
-    public UserDto getUserById(@PathVariable long userId) {
+    public UserDto getUserById(@PathVariable Long userId) {
         log.info("Получен запрос GET /users/{}", userId);
         return UserMapper.toUserDto(userService.getUserById(userId));
     }
 
     @Override
-    public void delete(@PathVariable long userId) {
+    public void delete(@PathVariable Long userId) {
         log.info("Получен запрос DELETE /users/{}", userId);
         userService.delete(userId);
     }

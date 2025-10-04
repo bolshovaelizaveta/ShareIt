@@ -13,11 +13,11 @@ public interface UserControllerApi {
     UserDto create(@Valid @RequestBody UserDto userDto);
 
     @PatchMapping("/{userId}")
-    UserDto update(@PathVariable long userId, @RequestBody UserDto userDto);
+    UserDto update(@PathVariable Long userId, @RequestBody UserDto userDto);
 
     @GetMapping("/{userId}")
-    UserDto getUserById(@PathVariable long userId);
+    UserDto getUserById(@PathVariable Long userId);
 
     @DeleteMapping("/{userId}")
-    void delete(@PathVariable long userId);
+    void delete(@PathVariable Long userId);
 }
