@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Data
 public class UserDto {
-    private long id;
+    private Long id;
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
     @NotBlank(message = "Email не может быть пустым")

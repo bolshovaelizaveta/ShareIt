@@ -1,7 +1,6 @@
 package ru.practicum.shareit.service.booking;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.dto.booking.BookingRequestDto;
@@ -10,15 +9,15 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.model.booking.Booking;
 import ru.practicum.shareit.model.booking.BookingStatus;
+import ru.practicum.shareit.model.booking.enums.State;
 import ru.practicum.shareit.model.item.Item;
 import ru.practicum.shareit.model.user.User;
+import ru.practicum.shareit.service.booking.stratagy.BookingStateStrategy;
 import ru.practicum.shareit.storage.booking.BookingRepository;
 import ru.practicum.shareit.storage.item.ItemRepository;
 import ru.practicum.shareit.storage.user.UserRepository;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +27,12 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final Map<String, BookingStateStrategy> bookerStrategies;
+    private final Map<String, BookingStateStrategy> ownerStrategies;
 
     @Override
     @Transactional
-    public Booking create(long userId, BookingRequestDto bookingDto) {
-        if (bookingDto.getStart().isAfter(bookingDto.getEnd()) || bookingDto.getStart().isEqual(bookingDto.getEnd())) {
-            throw new ValidationException("Дата окончания не может быть раньше или равна дате начала");
-        }
+    public Booking create(Long userId, BookingRequestDto bookingDto) {
 
         User booker = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + userId + " не найден"));
@@ -62,7 +60,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public Booking approve(long userId, long bookingId, boolean approved) {
+    public Booking approve(Long userId, Long bookingId, boolean approved) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Бронирование с id " + bookingId + " не найдено"));
 
@@ -80,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking getBookingById(long userId, long bookingId) {
+    public Booking getBookingById(Long userId, Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Бронирование с id " + bookingId + " не найдено"));
 
@@ -91,55 +89,30 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookingsByUser(long userId, String state) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        }
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        LocalDateTime now = LocalDateTime.now();
-        List<Booking> bookings = bookingRepository.findByBookerId(userId, sort);
+    public List<Booking> getBookingsByUser(Long userId, String stateString) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id ".concat(String.valueOf(userId)).concat(" не найден")));
 
-        return filterByState(bookings, state);
+        State state = State.from(stateString)
+                .orElseThrow(() -> new ValidationException("Unknown state: ".concat(stateString)));
+
+        String strategyName = "get" + state.name().substring(0, 1) + state.name().substring(1).toLowerCase() + "ByBooker";
+
+        BookingStateStrategy strategy = bookerStrategies.get(strategyName);
+        return strategy.findBookings(userId);
     }
 
     @Override
-    public List<Booking> getBookingsByOwner(long userId, String state) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("Пользователь с id " + userId + " не найден");
-        }
-        Sort sort = Sort.by(Sort.Direction.DESC, "start");
-        List<Booking> bookings = bookingRepository.findByItemOwnerId(userId, sort);
+    public List<Booking> getBookingsByOwner(Long userId, String stateString) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id ".concat(String.valueOf(userId)).concat(" не найден")));
 
-        return filterByState(bookings, state);
-    }
+        State state = State.from(stateString)
+                .orElseThrow(() -> new ValidationException("Unknown state: ".concat(stateString)));
 
-    private List<Booking> filterByState(List<Booking> bookings, String state) {
-        LocalDateTime now = LocalDateTime.now();
-        switch (state.toUpperCase()) {
-            case "ALL":
-                return bookings;
-            case "CURRENT":
-                return bookings.stream()
-                        .filter(b -> now.isAfter(b.getStart()) && now.isBefore(b.getEnd()))
-                        .collect(Collectors.toList());
-            case "PAST":
-                return bookings.stream()
-                        .filter(b -> now.isAfter(b.getEnd()))
-                        .collect(Collectors.toList());
-            case "FUTURE":
-                return bookings.stream()
-                        .filter(b -> now.isBefore(b.getStart()))
-                        .collect(Collectors.toList());
-            case "WAITING":
-                return bookings.stream()
-                        .filter(b -> b.getStatus() == BookingStatus.WAITING)
-                        .collect(Collectors.toList());
-            case "REJECTED":
-                return bookings.stream()
-                        .filter(b -> b.getStatus() == BookingStatus.REJECTED)
-                        .collect(Collectors.toList());
-            default:
-                throw new ValidationException("Unknown state: " + state);
-        }
+        String strategyName = "get" + state.name().substring(0, 1) + state.name().substring(1).toLowerCase() + "ByOwner";
+
+        BookingStateStrategy strategy = ownerStrategies.get(strategyName);
+        return strategy.findBookings(userId);
     }
 }

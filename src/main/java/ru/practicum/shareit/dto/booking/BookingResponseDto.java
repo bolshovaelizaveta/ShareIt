@@ -7,27 +7,10 @@ import java.time.LocalDateTime;
 
 @Data
 public class BookingResponseDto {
-    private long id;
+    private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
     private BookingStatus status;
-    private BookerDto booker;
-    private ItemDto item;
-
-    @Data
-    public static class BookerDto {
-        private long id;
-    }
-
-    @Data
-    public static class ItemDto {
-        private long id;
-        private String name;
-    }
-
-    @Data
-    public static class ItemBookingDto {
-        private long id;
-        private long bookerId;
-    }
+    private BookerInBookingDto booker;
+    private ItemInBookingDto item;
 }

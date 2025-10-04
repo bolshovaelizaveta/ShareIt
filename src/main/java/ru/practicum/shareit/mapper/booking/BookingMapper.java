@@ -1,6 +1,9 @@
 package ru.practicum.shareit.mapper.booking;
 
+import ru.practicum.shareit.dto.booking.BookingForItemDto;
 import ru.practicum.shareit.dto.booking.BookingResponseDto;
+import ru.practicum.shareit.dto.booking.BookerInBookingDto;
+import ru.practicum.shareit.dto.booking.ItemInBookingDto;
 import ru.practicum.shareit.model.booking.Booking;
 
 public class BookingMapper {
@@ -11,11 +14,11 @@ public class BookingMapper {
         dto.setEnd(booking.getEnd());
         dto.setStatus(booking.getStatus());
 
-        BookingResponseDto.BookerDto bookerDto = new BookingResponseDto.BookerDto();
+        BookerInBookingDto bookerDto = new BookerInBookingDto();
         bookerDto.setId(booking.getBooker().getId());
         dto.setBooker(bookerDto);
 
-        BookingResponseDto.ItemDto itemDto = new BookingResponseDto.ItemDto();
+        ItemInBookingDto itemDto = new ItemInBookingDto();
         itemDto.setId(booking.getItem().getId());
         itemDto.setName(booking.getItem().getName());
         dto.setItem(itemDto);
@@ -23,9 +26,9 @@ public class BookingMapper {
         return dto;
     }
 
-    public static BookingResponseDto.ItemBookingDto toItemBookingDto(Booking booking) {
+    public static BookingForItemDto toItemBookingDto(Booking booking) {
         if (booking == null) return null;
-        BookingResponseDto.ItemBookingDto dto = new BookingResponseDto.ItemBookingDto();
+        BookingForItemDto dto = new BookingForItemDto();
         dto.setId(booking.getId());
         dto.setBookerId(booking.getBooker().getId());
         return dto;

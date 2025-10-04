@@ -23,7 +23,7 @@ public class BookingController {
     private static final String USER_ID_HEADER = "X-Sharer-User-Id";
 
     @PostMapping
-    public BookingResponseDto create(@RequestHeader(USER_ID_HEADER) long userId,
+    public BookingResponseDto create(@RequestHeader(USER_ID_HEADER) Long userId,
                                      @Valid @RequestBody BookingRequestDto bookingDto) {
         log.info("Получен запрос POST /bookings от пользователя {} с телом: {}", userId, bookingDto);
         Booking createdBooking = bookingService.create(userId, bookingDto);
@@ -31,8 +31,8 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingResponseDto approve(@RequestHeader(USER_ID_HEADER) long userId,
-                                      @PathVariable long bookingId,
+    public BookingResponseDto approve(@RequestHeader(USER_ID_HEADER) Long userId,
+                                      @PathVariable Long bookingId,
                                       @RequestParam boolean approved) {
         log.info("Получен запрос PATCH /bookings/{} от пользователя {} с approved={}", bookingId, userId, approved);
         Booking approvedBooking = bookingService.approve(userId, bookingId, approved);
@@ -40,15 +40,15 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingResponseDto getBookingById(@RequestHeader(USER_ID_HEADER) long userId,
-                                             @PathVariable long bookingId) {
+    public BookingResponseDto getBookingById(@RequestHeader(USER_ID_HEADER) Long userId,
+                                             @PathVariable Long bookingId) {
         log.info("Получен запрос GET /bookings/{} от пользователя {}", bookingId, userId);
         Booking booking = bookingService.getBookingById(userId, bookingId);
         return BookingMapper.toBookingResponseDto(booking);
     }
 
     @GetMapping
-    public List<BookingResponseDto> getBookingsByUser(@RequestHeader(USER_ID_HEADER) long userId,
+    public List<BookingResponseDto> getBookingsByUser(@RequestHeader(USER_ID_HEADER) Long userId,
                                                       @RequestParam(defaultValue = "ALL") String state) {
         log.info("Получен запрос GET /bookings?state={} от пользователя {}", state, userId);
         return bookingService.getBookingsByUser(userId, state).stream()
@@ -57,7 +57,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingResponseDto> getBookingsByOwner(@RequestHeader(USER_ID_HEADER) long userId,
+    public List<BookingResponseDto> getBookingsByOwner(@RequestHeader(USER_ID_HEADER) Long userId,
                                                        @RequestParam(defaultValue = "ALL") String state) {
         log.info("Получен запрос GET /bookings/owner?state={} от пользователя {}", state, userId);
         return bookingService.getBookingsByOwner(userId, state).stream()

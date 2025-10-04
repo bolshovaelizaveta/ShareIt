@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public User update(long userId, User user) {
+    public User update(Long userId, User user) {
         User existingUser = getUserById(userId);
 
         if (user.getName() != null) {
@@ -41,14 +41,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(long id) {
+    public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id " + id + " не найден"));
     }
 
     @Override
     @Transactional
-    public void delete(long id) {
+    public void delete(Long id) {
         userRepository.deleteById(id);
     }
 }

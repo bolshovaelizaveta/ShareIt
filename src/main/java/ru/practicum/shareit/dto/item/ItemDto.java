@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Data
 public class ItemDto {
-    private long id;
+    private Long id;
     @NotBlank
     private String name;
     @NotBlank

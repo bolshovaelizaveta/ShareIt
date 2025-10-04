@@ -24,7 +24,7 @@ public class ItemController implements ItemControllerApi {
 
     @Override
     @PostMapping
-    public ItemDto create(@RequestHeader(USER_ID_HEADER) long userId,
+    public ItemDto create(@RequestHeader(USER_ID_HEADER) Long userId,
                           @Valid @RequestBody ItemDto itemDto) {
         log.info("Получен запрос POST /items от пользователя {} с телом: {}", userId, itemDto);
         Item item = ItemMapper.toItem(itemDto);
@@ -34,8 +34,8 @@ public class ItemController implements ItemControllerApi {
 
     @Override
     @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader(USER_ID_HEADER) long userId,
-                          @PathVariable long itemId,
+    public ItemDto update(@RequestHeader(USER_ID_HEADER) Long userId,
+                          @PathVariable Long itemId,
                           @RequestBody ItemDto itemDto) {
         log.info("Получен запрос PATCH /items/{} от пользователя {} с телом: {}", itemId, userId, itemDto);
         Item updatedItem = itemService.update(userId, itemId, itemDto);
@@ -44,15 +44,15 @@ public class ItemController implements ItemControllerApi {
 
     @Override
     @GetMapping("/{itemId}")
-    public ItemWithBookingsDto getItemById(@RequestHeader(USER_ID_HEADER) long userId,
-                                           @PathVariable long itemId) {
+    public ItemWithBookingsDto getItemById(@RequestHeader(USER_ID_HEADER) Long userId,
+                                           @PathVariable Long itemId) {
         log.info("Получен запрос GET /items/{} от пользователя {}", itemId, userId);
         return itemService.getItemById(userId, itemId);
     }
 
     @Override
     @GetMapping
-    public List<ItemWithBookingsDto> getItemsByOwner(@RequestHeader(USER_ID_HEADER) long userId) {
+    public List<ItemWithBookingsDto> getItemsByOwner(@RequestHeader(USER_ID_HEADER) Long userId) {
         log.info("Получен запрос GET /items от пользователя {}", userId);
         return itemService.getItemsByOwner(userId);
     }
@@ -68,8 +68,8 @@ public class ItemController implements ItemControllerApi {
 
     @Override
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader(USER_ID_HEADER) long userId,
-                                 @PathVariable long itemId,
+    public CommentDto addComment(@RequestHeader(USER_ID_HEADER) Long userId,
+                                 @PathVariable Long itemId,
                                  @Valid @RequestBody CommentDto commentDto) {
         log.info("Получен запрос POST /items/{}/comment от пользователя {} с телом {}", itemId, userId, commentDto);
         return itemService.addComment(userId, itemId, commentDto);
