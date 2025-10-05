@@ -6,7 +6,7 @@ import java.util.List;
 public interface UserService {
     List<User> findAll();
     User create(User user);
-    User update(long userId, User user);
-    User getUserById(long id);
-    void delete(long id);
+    User update(Long userId, User user);
+    User getUserById(Long id);
+    void delete(Long id);
 }
